@@ -21,51 +21,69 @@ import { TeamSwitcher } from './team-switcher';
 import { NavMain } from './nav-main';
 import { NavUser } from './nav-user';
 
-// This is sample data.
+// This is sample data for customer and provider.
 const data = {
-  navMain: [
-    {
-      title: 'Dashboard',
-      url: '/user/dashboard',
-      icon: SquareTerminal,
-      isActive: true,
-    },
-    {
-      title: 'Shop',
-      url: '/user/shop/products',
-      icon: Bot,
-      items: [
-        {
-          title: 'Manage Products',
-          url: '/user/shop/products',
-        },
-        {
-          title: 'Manage Categories',
-          url: '/user/shop/category',
-        },
-        {
-          title: 'Manage Coupon',
-          url: '/user/shop/manage-coupon',
-        },
-        {
-          title: 'Manage Brands',
-          url: '/user/shop/brand',
-        },
-      ],
-    },
-
-    {
-      title: 'Settings',
-      url: '#',
-      icon: Settings,
-      items: [
-        {
-          title: 'Profile',
-          url: '/profile',
-        },
-      ],
-    },
-  ],
+  customer: {
+    navMain: [
+      {
+        title: 'Dashboard',
+        url: '/customer/dashboard',
+        icon: SquareTerminal,
+        isActive: true,
+      },
+      {
+        title: 'My Orders',
+        url: '/customer/my-orders',
+        icon: Bot,
+        items: [
+          {
+            title: 'View Orders',
+            url: '/customer/my-order',
+          },
+        ],
+      },
+    ],
+  },
+  provider: {
+    navMain: [
+      {
+        title: 'Dashboard',
+        url: '/provider/dashboard',
+        icon: SquareTerminal,
+        isActive: true,
+      },
+      {
+        title: 'Manage-Menu',
+        url: '/provider/manage-menu',
+        icon: Bot,
+        items: [
+          {
+            title: 'Manage Products',
+            url: '/provider/manage-menu',
+          },
+          {
+            title: 'Manage Orders',
+            url: '/provider/manage-orders',
+          },
+          {
+            title: 'My Orders',
+            url: '/provider/my-order',
+          },
+        ],
+      },
+      {
+        title: 'Settings',
+        url: '/provider/profile',
+        icon: Settings,
+        items: [
+          {
+            title: 'Profile',
+            url: '/provider/settings',
+          },
+        ],
+      },
+    ],
+  },
   teams: [
     {
       name: 'Acme Inc',
@@ -87,14 +105,21 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps {
+  role: 'customer' | 'provider';
+}
+
+export function AppSidebar({ role, ...props }: AppSidebarProps) {
+  // Get the sidebar data based on the role
+  const sidebarData = data[role];
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={sidebarData.navMain} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

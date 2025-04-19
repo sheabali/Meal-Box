@@ -7,7 +7,7 @@ const authRoutes = ['/login', '/register'];
 
 const roleBasedPrivateRoutes = {
   customer: [/^\/customer/, /^\/create-shop/],
-  providers: [/^\/meal_providers /],
+  provider: [/^\/provider/],
 };
 
 export const middleware = async (request: NextRequest) => {
@@ -32,6 +32,7 @@ export const middleware = async (request: NextRequest) => {
 
   if (userInfo?.role && roleBasedPrivateRoutes[userInfo?.role as Role]) {
     const routes = roleBasedPrivateRoutes[userInfo?.role as Role];
+    console.log(routes, 'routes');
     if (routes.some((route) => pathname.match(route))) {
       return NextResponse.next();
     }
@@ -44,8 +45,8 @@ export const config = {
   matcher: [
     '/login',
     '/create-shop',
-    '/admin',
-    '/admin/:page',
+    '/provider',
+    '/provider/:page',
     '/customer',
     '/customer/:page',
   ],

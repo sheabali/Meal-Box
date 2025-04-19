@@ -1,4 +1,4 @@
-export default function UserDashboard() {
+export default function ProviderDashboard() {
   return (
     <div>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">

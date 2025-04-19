@@ -58,8 +58,8 @@ const data = {
         icon: Bot,
         items: [
           {
-            title: 'Manage Products',
-            url: '/provider/manage-menu',
+            title: 'Add Meal',
+            url: '/provider/manage-menu/add-meal',
           },
           {
             title: 'Manage Orders',

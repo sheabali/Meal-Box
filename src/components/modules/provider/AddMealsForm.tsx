@@ -34,12 +34,10 @@ import {
 
 export default function AddMealsForm({ user }: any) {
   const { userId: mealProviderId } = user;
-  console.log('mealProviderId', mealProviderId, user);
+
   const [imageFiles, setImageFiles] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const router = useRouter();
-
-  console.log(imageFiles, 'imageFiles');
 
   const form = useForm({
     defaultValues: {
@@ -83,23 +81,19 @@ export default function AddMealsForm({ user }: any) {
       isDeleted: false,
     };
 
-    console.log('modifiedData', modifiedData);
-
     const formData = new FormData();
     formData.append('data', JSON.stringify(modifiedData));
 
     for (const file of imageFiles) {
       formData.append('images', file);
     }
-    console.log('formData', formData);
 
     try {
       const res = await addMeal(formData);
-      console.log(res, 'res');
 
       if (res.success) {
         toast.success(res.message);
-        router.push('/user/shop/products');
+        router.push('/proivder/manage-menu');
       } else {
         toast.error(res.message);
       }

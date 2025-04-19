@@ -62,6 +62,10 @@ const data = {
             url: '/provider/manage-menu/add-meal',
           },
           {
+            title: 'View Meal',
+            url: '/provider/manage-menu/manage-meal',
+          },
+          {
             title: 'Manage Orders',
             url: '/provider/manage-orders',
           },

@@ -4,59 +4,59 @@ import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 
 // get all products
-export const getAllProducts = async (
-  page?: string,
-  limit?: string,
-  query?: { [key: string]: string | string[] | undefined }
-) => {
-  const params = new URLSearchParams();
+export const getAllMeal = async () =>
+  // page?: string,
+  // limit?: string,
+  // query?: { [key: string]: string | string[] | undefined }
+  {
+    // const params = new URLSearchParams();
 
-  if (query?.price) {
-    params.append('minPrice', '0');
-    params.append('maxPrice', query?.price.toString());
-  }
+    // if (query?.price) {
+    //   params.append('minPrice', '0');
+    //   params.append('maxPrice', query?.price.toString());
+    // }
 
-  if (query?.category) {
-    params.append('categories', query?.category.toString());
-  }
-  if (query?.brand) {
-    params.append('brands', query?.brand.toString());
-  }
-  if (query?.rating) {
-    params.append('ratings', query?.rating.toString());
-  }
+    // if (query?.category) {
+    //   params.append('categories', query?.category.toString());
+    // }
+    // if (query?.brand) {
+    //   params.append('brands', query?.brand.toString());
+    // }
+    // if (query?.rating) {
+    //   params.append('ratings', query?.rating.toString());
+    // }
 
-  try {
-    const token = (await cookies()).get('accessToken')?.value;
+    try {
+      const token = (await cookies()).get('accessToken')?.value;
 
-    if (!token) {
-      throw new Error('No access token found');
-    }
-
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/order/get-orders`,
-      {
-        next: {
-          tags: ['PRODUCT'],
-        },
-        headers: {
-          Authorization: token,
-        },
+      if (!token) {
+        throw new Error('No access token found');
       }
-    );
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch orders: ${res.statusText}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_API}/providers/my-menu`,
+        {
+          next: {
+            tags: ['PRODUCT'],
+          },
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error(`Failed to fetch orders: ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      console.log('data', data);
+      return data;
+    } catch (error: any) {
+      console.error('Error fetching orders:', error);
+      throw new Error(error.message || 'Something went wrong');
     }
-
-    const data = await res.json();
-    console.log('data', data);
-    return data;
-  } catch (error: any) {
-    console.error('Error fetching orders:', error);
-    throw new Error(error.message || 'Something went wrong');
-  }
-};
+  };
 
 // get single product
 export const getSingleProduct = async (productId: string) => {

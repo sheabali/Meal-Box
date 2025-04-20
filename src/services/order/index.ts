@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
+
 import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 
@@ -45,40 +46,45 @@ export const getSingleProduct = async (productId: string) => {
   }
 };
 
-// add product
-export const addProduct = async (productData: FormData): Promise<any> => {
+// update product
+export const updateOrderStatus = async (
+  status: string,
+  mealId: string
+): Promise<any> => {
+  console.log('status', status);
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/product`, {
-      method: 'POST',
-      body: productData,
-      headers: {
-        Authorization: (await cookies()).get('accessToken')!.value,
-      },
-    });
-    revalidateTag('PRODUCT');
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/order/change-status/${mealId}`,
+      {
+        method: 'PATCH',
+        body: JSON.stringify({ status }), // ✅ এখানে ঠিক করলাম
+        headers: {
+          'Content-Type': 'application/json', // ✅ এটা দরকার
+          Authorization: (await cookies()).get('accessToken')!.value,
+        },
+      }
+    );
+
+    revalidateTag('MEAL');
     return res.json();
   } catch (error: any) {
     return Error(error);
   }
 };
 
-// update product
-export const updateProduct = async (
-  productData: FormData,
-  productId: string
-): Promise<any> => {
+export const deleteOrder = async (orderId: string): Promise<any> => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/product/${productId}`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/order/${orderId}`,
       {
-        method: 'PATCH',
-        body: productData,
+        method: 'DELETE',
         headers: {
           Authorization: (await cookies()).get('accessToken')!.value,
         },
       }
     );
-    revalidateTag('PRODUCT');
+
+    revalidateTag('order');
     return res.json();
   } catch (error: any) {
     return Error(error);

@@ -69,10 +69,6 @@ const data = {
             title: 'Manage Orders',
             url: '/provider/manage-orders',
           },
-          {
-            title: 'My Orders',
-            url: '/provider/my-order',
-          },
         ],
       },
       {

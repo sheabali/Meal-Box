@@ -23,7 +23,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import NMImageUploader from '@/components/ui/core/NMImageUploader';
 import ImagePreviewer from '@/components/ui/core/ImagePreviewer';
-import { addMeal } from '@/services/meal';
+import { updateMeal } from '@/services/meal';
 import {
   Select,
   SelectContent,
@@ -32,9 +32,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export default function AddMealsForm({ user }: any) {
-  const { userId: mealProviderId } = user;
-
+export default function UpdateMealsForm({ mealId }: any) {
   const [imageFiles, setImageFiles] = useState<File[] | []>([]);
   const [imagePreview, setImagePreview] = useState<string[] | []>([]);
   const router = useRouter();
@@ -75,7 +73,6 @@ export default function AddMealsForm({ user }: any) {
 
     const modifiedData = {
       ...data,
-      mealProviderId: mealProviderId,
       ingredients,
       price: parseFloat(data.price),
       isDeleted: false,
@@ -89,7 +86,9 @@ export default function AddMealsForm({ user }: any) {
     }
 
     try {
-      const res = await addMeal(formData);
+      const res = await updateMeal(formData, mealId);
+
+      console.log('res', res);
 
       if (res.success) {
         toast.success(res.message);
@@ -106,7 +105,7 @@ export default function AddMealsForm({ user }: any) {
   return (
     <div className="border-2 border-gray-300 rounded-xl flex-grow max-w-2xl p-5 ">
       <div className="flex items-center space-x-4 mb-5 ">
-        <h1 className="text-xl font-bold">Add Meal</h1>
+        <h1 className="text-xl font-bold">Update Meal</h1>
       </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -261,7 +260,7 @@ export default function AddMealsForm({ user }: any) {
           </div>
 
           <Button type="submit" className="mt-5 w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Adding Meal.....' : 'Add Meal'}
+            {isSubmitting ? 'Update Meal..' : 'Update Meal'}
           </Button>
         </form>
       </Form>

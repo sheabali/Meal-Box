@@ -57,9 +57,9 @@ export const updateOrderStatus = async (
       `${process.env.NEXT_PUBLIC_BASE_API}/order/change-status/${mealId}`,
       {
         method: 'PATCH',
-        body: JSON.stringify({ status }), // ✅ এখানে ঠিক করলাম
+        body: JSON.stringify({ status }),
         headers: {
-          'Content-Type': 'application/json', // ✅ এটা দরকার
+          'Content-Type': 'application/json',
           Authorization: (await cookies()).get('accessToken')!.value,
         },
       }

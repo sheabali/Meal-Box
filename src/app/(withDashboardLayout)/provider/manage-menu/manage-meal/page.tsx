@@ -6,7 +6,6 @@ const ManageMeal = async () => {
   const { data: meal } = await getAllMeal();
 
   const { meals } = meal;
-  console.log('meal', meal);
 
   return (
     <div>

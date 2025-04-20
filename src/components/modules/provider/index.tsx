@@ -1,37 +1,76 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-// import { IMeta, IProduct } from '@/types';
+import Image from 'next/image';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { IMeal } from '@/types/meal';
+import { useRouter } from 'next/navigation';
+import { deleteMeal } from '@/services/meal';
+import { Button } from '@/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { Edit, Eye, Plus, Trash } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-// import { Checkbox } from '@/components/ui/checkbox';
-import { useState } from 'react';
 import { MBTable } from '@/components/ui/core/MBTable';
-import { IMeal } from '@/types/meal';
-// import DiscountModal from './DiscountModal';
-// import TablePagination from '@/components/ui/core/NMTable/TablePagination';
+
+import DeleteConfirmationModal from '@/components/ui/core/MBModal';
 
 const ManageMeals = ({ meals }: { meals: IMeal[] }) => {
   console.log('meal from manage page', meals);
-  const [selectedIds, setSelectedIds] = useState<string[] | []>([]);
-  console.log(selectedIds);
+  // const [selectedIds, setSelectedIds] = useState<string[] | []>([]);
+
   const router = useRouter();
 
   const handleView = (meal: IMeal) => {
     console.log('Viewing product:', meal);
   };
 
-  const handleDelete = (productId: string) => {
-    console.log('Deleting product with ID:', productId);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+
+  const handleDelete = (data: IMeal) => {
+    console.log('Deleting product:', data);
+    console.log(data);
+    setSelectedId(data?._id as string);
+    setSelectedItem(data?.name);
+    setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      if (selectedId) {
+        const res = await deleteMeal(selectedId);
+
+        console.log('res', res);
+
+        if (res.success) {
+          toast.success(res.message);
+          setModalOpen(false);
+        } else {
+          toast.error(res.message);
+        }
+      }
+    } catch (err: any) {
+      console.error(err?.message);
+    }
   };
 
   const columns: ColumnDef<IMeal>[] = [
     {
       accessorKey: 'name',
-      header: 'Name',
-      cell: ({ row }) => <span>{row.original?.name}</span>,
+      header: 'Product Name',
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          <Image
+            src={row.original?.image?.[0] ?? '/placeholder-image.png'}
+            alt={row.original.name}
+            width={40}
+            height={40}
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="truncate">{row.original?.name}</span>
+        </div>
+      ),
     },
 
     {
@@ -60,20 +99,38 @@ const ManageMeals = ({ meals }: { meals: IMeal[] }) => {
       cell: ({ row }) => <span>{row.original?.totalRatings ?? 0}</span>,
     },
     {
-      accessorKey: 'image',
-      header: 'Image',
-      cell: ({ row }) =>
-        row.original?.image?.length ? (
-          <Image
-            src={row.original.image[0]}
-            alt={row.original.name}
-            width={40}
-            height={40}
-            className="rounded-md object-cover"
-          />
-        ) : (
-          <span>No Image</span>
-        ),
+      accessorKey: 'action',
+      header: 'Action',
+      cell: ({ row }) => (
+        <div className="flex items-center space-x-3">
+          <button
+            className="text-gray-500 hover:text-blue-500"
+            title="View"
+            onClick={() => handleView(row?.original)}
+          >
+            <Eye className="w-5 h-5" />
+          </button>
+
+          <button
+            className="text-gray-500 hover:text-green-500"
+            title="Edit"
+            onClick={() =>
+              router.push(
+                `/provider/manage-menu/update-meal/${row.original?._id}`
+              )
+            }
+          >
+            <Edit className="w-5 h-5" />
+          </button>
+
+          <button className=" text-red-400 hover:text-red-500" title="Delete">
+            <Trash
+              onClick={() => handleDelete(row.original)}
+              className="w-5 h-5"
+            />
+          </button>
+        </div>
+      ),
     },
   ];
 
@@ -88,14 +145,17 @@ const ManageMeals = ({ meals }: { meals: IMeal[] }) => {
           >
             Add Meal <Plus />
           </Button>
-          {/* <DiscountModal
-            setSelectedIds={setSelectedIds}
-            selectedIds={selectedIds}
-          /> */}
         </div>
       </div>
       <MBTable columns={columns} data={meals || []} />
       {/* <TablePagination totalPage={meta.totalPage} /> */}
+
+      <DeleteConfirmationModal
+        isOpen={isModalOpen}
+        name={selectedItem}
+        onOpenChange={setModalOpen}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };

@@ -10,4 +10,5 @@ export type IMeal = {
   ratings?: number;
   totalRatings?: number;
   isDeleted?: boolean;
+  _id?: string;
 };

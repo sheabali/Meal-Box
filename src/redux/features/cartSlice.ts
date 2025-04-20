@@ -21,16 +21,20 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const product = action.payload;
-      const existingProduct = state.products.find(
-        (item) => item._id === product._id
-      );
-      if (existingProduct) {
-        existingProduct.orderQuantity += product.orderQuantity;
-      } else {
-        state.products.push(product);
+    addProduct: (state, action) => {
+      if (state.products.length === 0) {
+        state.shopId = action.payload.shop._id;
       }
+      const productToAdd = state.products.find(
+        (product) => product._id === action.payload._id
+      );
+
+      if (productToAdd) {
+        productToAdd.orderQuantity += 1;
+        return;
+      }
+
+      state.products.push({ ...action.payload, orderQuantity: 1 });
     },
     removeFromCart: (state, action) => {
       const productId = action.payload;

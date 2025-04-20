@@ -42,6 +42,17 @@ const data = {
           },
         ],
       },
+      {
+        title: 'Settings',
+        url: '/customer/profile',
+        icon: Settings,
+        items: [
+          {
+            title: 'Profile',
+            url: '/customer/settings',
+          },
+        ],
+      },
     ],
   },
   provider: {

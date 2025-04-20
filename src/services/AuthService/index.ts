@@ -103,3 +103,23 @@ export const getNewToken = async () => {
     return Error(error);
   }
 };
+
+export const changePassword = async (data: FieldValues) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/auth/change-password`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: (await cookies()).get('accessToken')!.value,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};

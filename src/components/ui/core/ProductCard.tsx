@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { addProduct } from '@/redux/features/cartSlice';
+import { useAppDispatch } from '@/redux/hooks';
 
-// import { useAppDispatch } from '@/redux/hooks';
 // import { IProduct } from '@/types';
 import { IMeal } from '@/types/meal';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
@@ -17,11 +18,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const ProductCard = ({ product }: { product: IMeal }) => {
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
 
   const handleAddProduct = (product: IMeal) => {
     console.log(product);
-    // dispatch(addProduct(product));
+    dispatch(addProduct(product));
   };
 
   return (
@@ -96,7 +97,7 @@ const ProductCard = ({ product }: { product: IMeal }) => {
             variant="outline"
             className="w-1/2 sm:w-32"
           >
-            Buy Now
+            Order Now
           </Button>
           <Button
             onClick={() => handleAddProduct(product)}

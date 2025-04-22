@@ -52,6 +52,8 @@ const StripeCardForm = ({
       setLoading(false);
     } else {
       if (paymentMethod && paymentMethod.id) {
+        console.log('PaymentMethod Created:', paymentMethod);
+
         setPaymentMethodId(paymentMethod?.id);
         if (paymentMethod?.id) {
           handleNextStep(paymentMethod.id);

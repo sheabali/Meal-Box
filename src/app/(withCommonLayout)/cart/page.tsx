@@ -61,6 +61,7 @@ const OrderMealPage = () => {
   console.log('currentMeal', currentMeal);
 
   const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+  console.log('stripeKey', stripeKey);
 
   if (!stripeKey) {
     console.error(
@@ -69,6 +70,7 @@ const OrderMealPage = () => {
   }
 
   const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
+  console.log('stripePromise', stripePromise);
 
   // useEffect(() => {
   //   const fetchMeal = async () => {
@@ -84,6 +86,7 @@ const OrderMealPage = () => {
   // }, [id]);
   // const user = useUser();
   const [myAddress, setMyAddress] = useState<any>(null);
+  console.log('myAddress form page ', myAddress);
 
   const me = useUser();
   console.log('user', me.user?.userId);
@@ -125,6 +128,7 @@ const OrderMealPage = () => {
   };
 
   const handleNextStep = async (paymentMethodId: string) => {
+    console.log(paymentMethodId, 'paymentMethodId');
     const res = await handleAsyncWithToast(async () => {
       return createOrder({
         paymentMethodId: paymentMethodId,

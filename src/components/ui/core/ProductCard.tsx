@@ -13,7 +13,7 @@ import { useAppDispatch } from '@/redux/hooks';
 
 // import { IProduct } from '@/types';
 import { IMeal } from '@/types/meal';
-import { Heart, ShoppingCart, Star } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -91,23 +91,17 @@ const ProductCard = ({ product }: { product: IMeal }) => {
 
       <CardFooter className="p-2">
         <div className="flex gap-2 items-center justify-between w-full">
-          <Button
-            disabled={product?.availability === false}
-            size="sm"
-            variant="outline"
-            className="w-1/2 sm:w-32"
-          >
-            Order Now
-          </Button>
-          <Button
-            onClick={() => handleAddProduct(product)}
-            disabled={product?.availability === false}
-            variant="outline"
-            size="sm"
-            className="w-10 h-10 flex items-center justify-center rounded-full"
-          >
-            <ShoppingCart />
-          </Button>
+          <Link href="/cart">
+            <Button
+              onClick={() => handleAddProduct(product)}
+              disabled={product?.availability === false}
+              variant="outline"
+              size="sm"
+              className=" flex items-center justify-center rounded-full"
+            >
+              Order Now
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"

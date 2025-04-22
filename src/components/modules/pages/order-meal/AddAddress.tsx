@@ -1,15 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { z } from 'zod';
-import {
-  useCreateAddressMutation,
-  useGetMyAddressQuery,
-  useUpdateAddressMutation,
-} from '@/redux/features/address/address.api';
-import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
+
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -17,6 +13,8 @@ import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
 import { Card } from '@/components/ui/card';
 import Loading from '@/components/shared/Loading';
+import { addAddress, getMyAddress } from '@/services/address';
+import { toast } from 'sonner';
 
 const validationSchema = z.object({
   zipCode: z.string().min(1, 'Zip code is required'),
@@ -35,16 +33,9 @@ const AddAddress = ({
 }) => {
   const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined);
   const [emptyDateError, setEmptyDateError] = useState('');
-
-  const [createAddress] = useCreateAddressMutation();
-  const [updateAddress] = useUpdateAddressMutation();
-  const {
-    data: response,
-    isLoading,
-    isFetching,
-  } = useGetMyAddressQuery(undefined);
-
-  const myAddress = response?.data;
+  const [loading, setLoading] = useState(true);
+  const [myAddress, setMyAddress] = useState<any>(null);
+  console.log('myAddress', myAddress?.zipCode);
 
   const form = useForm<FormDataType>({
     resolver: zodResolver(validationSchema),
@@ -56,6 +47,34 @@ const AddAddress = ({
       city: myAddress?.city || '',
     },
   });
+
+  // Fetch address and populate form
+  useEffect(() => {
+    const fetchAddress = async () => {
+      try {
+        const res = await getMyAddress();
+        console.log('res', res?.data);
+
+        if (res?.data) {
+          setMyAddress(res.data);
+
+          form.reset({
+            customization: '',
+            zipCode: res.data.zipCode || '',
+            pickupStreet: res.data.pickupStreet || '',
+            houseNo: res.data.houseNo || '',
+            city: res.data.city || '',
+          });
+        }
+      } catch (err) {
+        console.error('Failed to fetch address in component:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAddress();
+  }, [form]);
 
   useEffect(() => {
     if (pickupDate) {
@@ -71,6 +90,7 @@ const AddAddress = ({
       setEmptyDateError('Please select pickup date');
       return;
     }
+
     if (formData.customization) {
       localStorage.setItem('customization', formData.customization);
     }
@@ -78,22 +98,20 @@ const AddAddress = ({
     const payload = { ...formData };
     delete payload.customization;
 
-    const apiCall = myAddress?._id ? updateAddress : createAddress;
-    const toastMsg = myAddress?._id
-      ? 'Updating Address...'
-      : 'Adding Address...';
+    const res = await addAddress(payload);
 
-    const response = await handleAsyncWithToast(
-      () => apiCall(payload),
-      toastMsg
-    );
-    if (response?.data?.success) {
+    if (res?.success === false) {
+      toast.error(res.message);
+      return;
+    }
+
+    if (res?.success) {
       setCurrentStep((prev) => prev + 1);
       form.reset();
     }
   };
 
-  if (isLoading || isFetching) return <Loading />;
+  if (loading) return <Loading label="Fetching your address..." />;
 
   return (
     <div className="px-5 flex flex-col justify-center max-w-xl w-full mx-auto">
@@ -105,7 +123,7 @@ const AddAddress = ({
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
-          <div>
+          <div className="w-full space-y-2">
             <Label htmlFor="customization">Meal Customization</Label>
             <Input
               id="customization"
@@ -114,30 +132,43 @@ const AddAddress = ({
             />
           </div>
 
-          <div>
+          <div className="w-full space-y-2">
             <Label htmlFor="zipCode">Zip Code</Label>
-            <Input id="zipCode" {...form.register('zipCode')} />
+            <Input
+              placeholder="Zip Code"
+              id="zipCode"
+              {...form.register('zipCode')}
+            />
           </div>
 
-          <div>
+          <div className="w-full space-y-2">
             <Label htmlFor="pickupStreet">Pickup Street</Label>
-            <Input id="pickupStreet" {...form.register('pickupStreet')} />
+            <Input
+              placeholder="Pickup Street"
+              id="pickupStreet"
+              {...form.register('pickupStreet')}
+            />
           </div>
 
-          <div>
+          <div className="w-full space-y-2">
             <Label htmlFor="houseNo">House No</Label>
-            <Input id="houseNo" {...form.register('houseNo')} />
+            <Input
+              placeholder="House No"
+              id="houseNo"
+              {...form.register('houseNo')}
+            />
           </div>
 
-          <div>
+          <div className="w-full space-y-2">
             <Label htmlFor="city">City</Label>
-            <Input id="city" {...form.register('city')} />
+            <Input placeholder="City" id="city" {...form.register('city')} />
           </div>
 
-          <div className="space-y-2">
-            <Label>Click to select your receive date</Label>
+          <div className="w-full space-y-2">
+            <Label>Select your receive date</Label>
             <Card className="p-2">
               <Calendar
+                className="w-full"
                 mode="single"
                 selected={pickupDate}
                 onSelect={(date) => {

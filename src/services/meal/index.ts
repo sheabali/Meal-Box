@@ -4,6 +4,29 @@ import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 
 // get all products
+export const getAllMeals = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/providers/my-menus`,
+      {
+        next: {
+          tags: ['MEAL'],
+        },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error(`Failed to fetch orders: ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    console.log('data', data);
+    return data;
+  } catch (error: any) {
+    console.error('Error fetching orders:', error);
+    throw new Error(error.message || 'Something went wrong');
+  }
+};
 export const getAllMeal = async () => {
   try {
     const token = (await cookies()).get('accessToken')?.value;
@@ -45,6 +68,9 @@ export const getSingleMeal = async (mealId: string) => {
       {
         next: {
           tags: ['PRODUCT'],
+        },
+        headers: {
+          Authorization: (await cookies()).get('accessToken')!.value,
         },
       }
     );

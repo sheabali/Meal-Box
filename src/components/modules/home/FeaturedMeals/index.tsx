@@ -2,13 +2,13 @@ import { Button } from '@/components/ui/button';
 import NMContainer from '@/components/ui/core/MBContainer';
 import ProductCard from '@/components/ui/core/ProductCard';
 
-import { getAllMeal } from '@/services/meal';
+import { getAllMeals } from '@/services/meal';
 
 import { IMeal } from '@/types/meal';
 import Link from 'next/link';
 
 const FeaturedMeals = async () => {
-  const { data: products } = await getAllMeal();
+  const { data: products } = await getAllMeals();
   const { meals } = products;
   console.log('products', products);
 

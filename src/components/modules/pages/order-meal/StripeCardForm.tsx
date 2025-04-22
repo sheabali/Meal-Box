@@ -73,7 +73,6 @@ const StripeCardForm = ({
         <input
           type="text"
           defaultValue={cardHolderName}
-          // defaultValue={"Mahdi Hasan"}
           onChange={(e) => setCardHolderName(e.target.value)}
           className="w-full border py-1 px-2 rounded-md"
           required
@@ -82,7 +81,7 @@ const StripeCardForm = ({
 
       <div className="mb-4">
         <label className="block font-semibold mb-2">Card Number</label>
-        {/* Test: 4242 4242 4242 4242 */}
+
         <div className="border p-2 rounded-md">
           <CardNumberElement className="w-full" />
         </div>
@@ -114,11 +113,11 @@ const StripeCardForm = ({
         {loading ? 'Processing...' : 'Confirm Order'}
       </button>
 
-      {/* {paymentMethodId && (
+      {paymentMethodId && (
         <p className="text-green-500 mt-2">
           Payment Method Created: {paymentMethodId}
         </p>
-      )} */}
+      )}
     </form>
   );
 };

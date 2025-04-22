@@ -44,6 +44,29 @@ export const getAllOrder = async () => {
     return Error(error.message);
   }
 };
+// get all products
+export const getAddress = async () => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/address/get-my-address`,
+
+      {
+        next: {
+          tags: ['ORDER'],
+        },
+        headers: {
+          Authorization: (await cookies()).get('accessToken')!.value,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    return data;
+  } catch (error: any) {
+    return Error(error.message);
+  }
+};
 
 // get single product
 export const getSingleProduct = async (productId: string) => {

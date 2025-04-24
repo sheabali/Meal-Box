@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 import { IAddress } from '@/types';
+import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 
 export const getMyAddress = async () => {
@@ -44,7 +45,6 @@ export const getMyAddress = async () => {
 };
 
 export const addAddress = async (addressData: IAddress) => {
-  console.log('maddressData', addressData);
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/address`, {
       method: 'POST',
@@ -56,7 +56,7 @@ export const addAddress = async (addressData: IAddress) => {
         'Content-Type': 'application/json',
       },
     });
-    console.log('res', res);
+
     // revalidateTag('address');
     return res.json();
   } catch (error: any) {
@@ -64,23 +64,17 @@ export const addAddress = async (addressData: IAddress) => {
   }
 };
 
-export const updateAddress = async (
-  addressData: FormData,
-  addressId: string
-): Promise<any> => {
-  console.log('mealData', addressData, addressId);
+export const updateAddress = async (addressData: FormData) => {
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/address/${addressId}`,
-      {
-        method: 'PATCH',
-        body: addressData,
-        headers: {
-          Authorization: (await cookies()).get('accessToken')!.value,
-        },
-      }
-    );
-    // revalidateTag('address');
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/address`, {
+      method: 'PATCH',
+      body: JSON.stringify(addressData),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: (await cookies()).get('accessToken')!.value,
+      },
+    });
+    revalidateTag('address');
     return res.json();
   } catch (error: any) {
     return Error(error);

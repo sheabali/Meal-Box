@@ -1,19 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
+import { IUser } from '@/types';
 import { jwtDecode } from 'jwt-decode';
+import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { FieldValues } from 'react-hook-form';
+import { json } from 'stream/consumers';
 
 export const registerUser = async (userData: FieldValues) => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/user`, {
       method: 'POST',
+
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(userData),
     });
+
     const result = await res.json();
 
     if (result.success) {
@@ -59,6 +64,22 @@ export const getCurrentUser = async () => {
     return decodedData;
   } else {
     return null;
+  }
+};
+export const getSingleUser = async (id: string) => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/user/${id}`, {
+      next: {
+        tags: ['USER'],
+      },
+      headers: {
+        Authorization: (await cookies()).get('accessToken')!.value,
+      },
+    });
+    const data = await res.json();
+    return data;
+  } catch (error: any) {
+    return Error(error.message);
   }
 };
 
@@ -118,6 +139,25 @@ export const changePassword = async (data: FieldValues) => {
       }
     );
 
+    return res.json();
+  } catch (error: any) {
+    return Error(error);
+  }
+};
+export const updateCustomerProfile = async (userData: FieldValues) => {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/user/update-customer-profile`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: (await cookies()).get('accessToken')!.value,
+        },
+        body: JSON.stringify(userData),
+      }
+    );
+    revalidateTag('USER');
     return res.json();
   } catch (error: any) {
     return Error(error);

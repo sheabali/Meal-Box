@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
 
-import { IUser } from '@/types';
 import { jwtDecode } from 'jwt-decode';
 import { revalidateTag } from 'next/cache';
 import { cookies } from 'next/headers';
 import { FieldValues } from 'react-hook-form';
-import { json } from 'stream/consumers';
 
 export const registerUser = async (userData: FieldValues) => {
   try {

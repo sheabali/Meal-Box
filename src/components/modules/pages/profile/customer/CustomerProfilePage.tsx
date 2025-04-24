@@ -2,42 +2,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useEffect, useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
-// import { useUpdateCustomerProfileMutation } from '@/redux/features/profile/profile.customer.api';
-import { DollarSign, Package } from 'lucide-react';
-
-// import {
-//   useCreateAddressMutation,
-//   useGetMyAddressQuery,
-//   useUpdateAddressMutation,
-// } from '@/redux/features/address/address.api';
-import MBFormInput from '@/components/ui/core/MBForm/MBFormInput/MBFormInput';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import MBFormWrapper from '@/components/ui/core/MBForm/MBFormWrapper/MBFormWrapper';
-import Loading from '@/components/shared/Loading';
 import { useUser } from '@/context/UserContext';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { addAddress, getMyAddress, updateAddress } from '@/services/address';
+import { getSingleUser, updateCustomerProfile } from '@/services/AuthService';
+import MBFormInput from '@/components/ui/core/MBForm/MBFormInput/MBFormInput';
+import MBFormWrapper from '@/components/ui/core/MBForm/MBFormWrapper/MBFormWrapper';
 
 interface IUser {
-  dietaryPreferences?: string[];
+  dietaryPreferences: string[];
 }
-import { addAddress, getMyAddress, updateAddress } from '@/services/address';
-import {
-  getCurrentUser,
-  getSingleUser,
-  updateCustomerProfile,
-} from '@/services/AuthService';
-import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 const updateCustomerProfileSchema = z.object({
   name: z.string().optional(),
   phoneNumber: z.string().optional(),
-  dietaryPreferences: z.array(z.string()).optional(), // Optional array of strings
+  dietaryPreferences: z.array(z.string()).optional(),
 });
 
 const addAddressValidationSchema = z.object({
@@ -55,17 +40,6 @@ export default function CustomerProfilePage() {
   const [responseOfMyAddress, setResponseOfMyAddress] = useState<any>(null);
   const [users, setUsers] = useState<any>(null);
   console.log('users', users);
-
-  // const [isMeLoading, setIsMeLoading] = useState(false);
-  // const [isMeFetching, setIsMeFetching] = useState(false);
-  // const [isAddressLoading, setIsAddressLoading] = useState(false);
-  // const [isAddressFetching, setIsAddressFetching] = useState(false);
-
-  // const [updateCustomerProfile] = useUpdateCustomerProfileMutation();
-
-  // const [createAddress] = useCreateAddressMutation();
-  // const [updateAddress] = useUpdateAddressMutation();
-
   const {
     register,
     handleSubmit,
@@ -75,19 +49,7 @@ export default function CustomerProfilePage() {
     resolver: zodResolver(updateCustomerProfileSchema),
   });
 
-  // const {
-  //   data: me,
-  //   isLoading: isMeLoading,
-  //   isFetching: isMeFetching,
-  // } = useGetMeQuery(undefined);
-
   const me = useUser();
-
-  // const {
-  //   data: responseOfMyAddress,
-  //   isLoading: isAddressLoading,
-  //   isFetching: isAddressFetching,
-  // } = useGetMyAddressQuery(undefined);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -150,16 +112,6 @@ export default function CustomerProfilePage() {
       dietaryPreferences,
     };
 
-    //   const res = await handleAsyncWithToast(async () => {
-    //     return updateCustomerProfile(payload);
-    //   }, 'Updating...');
-    //   if (res?.data.success) {
-    //     setIsSubmitting(false);
-    //     reset();
-    //   }
-    //   setIsSubmitting(false);
-    // };
-
     try {
       const res = await updateCustomerProfile(payload);
       if (res?.data) {
@@ -195,10 +147,6 @@ export default function CustomerProfilePage() {
       }
     }
   };
-
-  // if (isMeLoading || isMeFetching || isAddressLoading || isAddressFetching) {
-  //   return <Loading />;
-  // }
 
   return (
     <div className="min-h-screen bg-muted px-4 sm:px-6 py-10">

@@ -2,23 +2,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
-import Button from '@/components/shared/Button/Button';
-import Loading from '@/components/shared/Loading/Loading';
-import { useGetMeQuery } from '@/redux/features/auth/authApi';
-import { useUpdateProviderProfileMutation } from '@/redux/features/profile/profile.provider';
+import { toast } from 'sonner';
+import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { useUser } from '@/context/UserContext';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { addAddress, getMyAddress, updateAddress } from '@/services/address';
 import {
-  useCreateAddressMutation,
-  useGetMyAddressQuery,
-  useUpdateAddressMutation,
-} from '@/redux/features/address/address.api';
-import MyFormWrapper from '@/components/ui/MyForm/MyFormWrapper/MyFormWrapper';
-import MyFormInput from '@/components/ui/MyForm/MyFormInput/MyFormInput';
-import { DollarSign, Package } from 'lucide-react';
+  getSingleUser,
+  updateCustomerProfile,
+  updateProviderProfile,
+} from '@/services/AuthService';
+import MBFormInput from '@/components/ui/core/MBForm/MBFormInput/MBFormInput';
+import MBFormWrapper from '@/components/ui/core/MBForm/MBFormWrapper/MBFormWrapper';
 
 const updateProviderProfileSchema = z.object({
   name: z.string().optional(),
@@ -33,39 +32,57 @@ const addAddressValidationSchema = z.object({
   city: z.string().min(1, 'City is required'),
 });
 
-type UpdateProviderProfile = z.infer<typeof updateProviderProfileSchema>;
+type UpdateCustomerProfile = z.infer<typeof updateProviderProfileSchema>;
 
 export default function ProviderProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cuisinePreferences, setCuisinePreferences] = useState<string[]>([]);
 
-  const [updateProviderProfile] = useUpdateProviderProfileMutation();
-
-  const [createAddress] = useCreateAddressMutation();
-  const [updateAddress] = useUpdateAddressMutation();
+  const [responseOfMyAddress, setResponseOfMyAddress] = useState<any>(null);
+  const [users, setUsers] = useState<any>(null);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UpdateProviderProfile>({
+  } = useForm<UpdateCustomerProfile>({
     resolver: zodResolver(updateProviderProfileSchema),
   });
 
-  const {
-    data: me,
-    isLoading: isMeLoading,
-    isFetching: isMeFetching,
-  } = useGetMeQuery(undefined);
+  const me = useUser();
 
-  const {
-    data: responseOfMyAddress,
-    isLoading: isAddressLoading,
-    isFetching: isAddressFetching,
-  } = useGetMyAddressQuery(undefined);
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      if (!me?.user?.userId) return;
 
-  const provider = me?.data;
+      try {
+        const res = await getSingleUser(me.user.userId);
+
+        if (res?.data) {
+          setUsers(res.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, [me?.user?.userId]);
+
+  useEffect(() => {
+    const fetchAddress = async () => {
+      const res = await getMyAddress();
+      if (res?.data) {
+        setResponseOfMyAddress(res);
+      }
+    };
+
+    fetchAddress();
+  }, []);
+
+  const provider = me?.user;
+
   const myAddress = responseOfMyAddress?.data;
 
   const cuisineSpecialties = [
@@ -88,244 +105,196 @@ export default function ProviderProfilePage() {
     setCuisinePreferences(updatedCuisinePreferences);
   };
 
-  const onSubmit = async (data: UpdateProviderProfile) => {
+  const onSubmit = async (data: UpdateCustomerProfile) => {
     setIsSubmitting(true);
     const payload = {
       ...data,
-      cuisineSpecialties: cuisinePreferences,
+      cuisinePreferences,
     };
-    const res = await handleAsyncWithToast(async () => {
-      return updateProviderProfile(payload);
-    }, 'Updating...');
-    if (res?.data?.success) {
+    console.log('payload', payload);
+
+    try {
+      const res = await updateProviderProfile(payload);
+      console.log('response', res);
+      if (res?.data) {
+        setIsSubmitting(false);
+        reset();
+        toast.success('Profile updated successfully');
+      }
+    } catch (error) {
       setIsSubmitting(false);
-      reset();
+      toast.error('Failed to update profile');
     }
-    setIsSubmitting(false);
   };
 
   const handleAddUpdateAddress = async (formData: any, reset: any) => {
     const payload = {
       ...formData,
     };
+    console.log('payload', payload);
 
     if (!myAddress?._id) {
-      const response = await handleAsyncWithToast(async () => {
-        return createAddress(payload);
-      }, 'Adding Address...');
+      const response = await addAddress(payload);
+      console.log('response', response);
       if (response?.data?.success) {
+        toast.success('Address added successfully');
         reset();
       }
     } else {
-      const response = await handleAsyncWithToast(async () => {
-        return updateAddress(payload);
-      }, 'Updating Address...');
-      if (response?.data?.success) {
+      const response = await updateAddress(payload);
+      console.log('response', response);
+
+      if (response?.data) {
+        toast.success('Address updated successfully');
         reset();
       }
     }
   };
 
-  if (isMeLoading || isMeFetching || isAddressLoading || isAddressFetching) {
-    return <Loading />;
-  }
-
   return (
-    <div className="min-h-screen w-[90%] mx-auto bg-gray-50 py-6 lg:py-10 sm:px-6">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
-        <div className="col-span-1 md:col-span-3 row-span-5">
-          <div className="w-full h-full mx-auto bg-gray-100 rounded-xl border border-gray-300 overflow-hidden">
-            <div className="md:flex">
-              <div className="p-8 w-full">
-                <div className="uppercase tracking-wide text-sm text-primary font-semibold mb-1">
-                  Provider Profile
-                </div>
-                <h1 className="block mt-1 text-lg leading-tight font-medium text-text-primary">
-                  Update Your Details
-                </h1>
-                <p className="mt-2 text-gray-500">
-                  Manage your personal information and preferences
-                </p>
+    <div className="min-h-screen bg-muted px-4 sm:px-6 py-10">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Profile Section */}
+        <div className="md:col-span-2 bg-white rounded-2xl shadow-sm border p-8">
+          <h2 className="text-xl font-semibold text-primary mb-1">
+            Provider Profile
+          </h2>
+          <p className="text-muted-foreground mb-6">
+            Manage your personal information and preferences
+          </p>
 
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="mt-6 space-y-6"
-                >
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Business Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      required
-                      {...register('name')}
-                      defaultValue={provider.name}
-                      className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                    />
-                  </div>
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-6">
+            <div>
+              <Label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Name
+              </Label>
+              <input
+                type="text"
+                id="name"
+                required
+                {...register('name')}
+                defaultValue={users?.name}
+                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              />
+            </div>
 
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Email (read only)
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      disabled
-                      defaultValue={provider.email}
-                      className="mt-1 block w-full px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-200 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                    />
-                  </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email (read only)
+              </label>
+              <input
+                type="email"
+                id="email"
+                disabled
+                defaultValue={provider?.email}
+                className="mt-1 block w-full px-3 py-2 disabled:cursor-not-allowed disabled:bg-gray-200 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+              />
+            </div>
 
-                  <div>
-                    <label
-                      htmlFor="phoneNumber"
-                      className="block text-sm font-medium text-gray-700"
-                    >
-                      Phone Number
-                    </label>
-                    <div className="flex items-center justify-center gap-2 mt-1">
-                      <span className="flex items-center text-base text-gray-500 bg-gray-200 rounded-lg border border-gray-300 px-3 py-2">
-                        +88
-                      </span>
-                      <input
-                        type="tel"
-                        id="phoneNumber"
-                        {...register('phoneNumber')}
-                        defaultValue={provider.phoneNumber}
-                        className="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <span className="block text-sm font-medium text-gray-700 mb-2">
-                      Cuisine Specialties (current:{' '}
-                      <span>
-                        {Array.isArray(provider?.cuisineSpecialties) &&
-                        provider.cuisineSpecialties.length > 0
-                          ? provider.cuisineSpecialties.join(', ')
-                          : 'N/A'}
-                      </span>
-                      )
-                    </span>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {cuisineSpecialties.map((option) => (
-                        <div key={option} className="flex items-center">
-                          <input
-                            id={`diet-${option}`}
-                            name="dietaryPreferences"
-                            type="checkbox"
-                            defaultChecked={
-                              cuisinePreferences.includes(option) ||
-                              provider?.cuisineSpecialties?.includes(option)
-                            }
-                            onChange={() =>
-                              handleCuisinePreferencesChange(option)
-                            }
-                            className="h-4 w-4 accent-primary text-primary focus:ring-primary border-gray-300 rounded"
-                          />
-                          <label
-                            htmlFor={`diet-${option}`}
-                            className="ml-2 block text-sm text-gray-700"
-                          >
-                            {option}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-end">
-                    <Button
-                      label={isSubmitting ? 'Saving...' : 'Save Changes'}
-                      type="submit"
-                    />
-                  </div>
-                </form>
+            <div>
+              <Label
+                htmlFor="phoneNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Phone Number
+              </Label>
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <span className="flex items-center text-base text-gray-500 bg-gray-200 rounded-lg border border-gray-300 px-3 py-2">
+                  +88
+                </span>
+                <input
+                  type="tel"
+                  id="phoneNumber"
+                  {...register('phoneNumber')}
+                  defaultValue={users?.phoneNumber}
+                  className="block w-full px-3 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary"
+                />
               </div>
             </div>
-          </div>
+            <div>
+              <span className="block text-sm font-medium text-gray-700 mb-2">
+                Cuisine Specialties (current:{' '}
+                <span>
+                  {Array.isArray(provider?.cuisineSpecialties) &&
+                  provider.cuisineSpecialties.length > 0
+                    ? provider.cuisineSpecialties.join(', ')
+                    : 'N/A'}
+                </span>
+                )
+              </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {cuisineSpecialties.map((option) => (
+                  <div key={option} className="flex items-center">
+                    <input
+                      id={`diet-${option}`}
+                      name="dietaryPreferences"
+                      type="checkbox"
+                      defaultChecked={
+                        cuisinePreferences.includes(option) ||
+                        provider?.cuisineSpecialties?.includes(option)
+                      }
+                      onChange={() => handleCuisinePreferencesChange(option)}
+                      className="h-4 w-4 accent-primary text-primary focus:ring-primary border-gray-300 rounded"
+                    />
+                    <label
+                      htmlFor={`diet-${option}`}
+                      className="ml-2 block text-sm text-gray-700"
+                    >
+                      {option}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end">
+              <Button type="submit">
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </form>
         </div>
 
-        <div className="col-span-1 md:col-span-2 row-span-3 md:col-start-4 space-y-5">
-          <div className="bg-gray-100 border border-gray-300 rounded-lg p-5">
-            <div className="space-y-4">
-              <h2 className="block text-lg text-text-primary">
-                Shipping Address
-              </h2>
-
-              <MyFormWrapper
-                onSubmit={handleAddUpdateAddress}
-                resolver={zodResolver(addAddressValidationSchema)}
-                className="space-y-4"
-              >
-                <div className="space-y-4">
-                  <MyFormInput
-                    value={myAddress?.zipCode}
-                    name="zipCode"
-                    placeHolder="Zip Code"
-                  />
-                  <MyFormInput
-                    value={myAddress?.pickupStreet}
-                    name="pickupStreet"
-                    placeHolder="Pickup Street"
-                  />
-                  <MyFormInput
-                    value={myAddress?.houseNo}
-                    name="houseNo"
-                    placeHolder="House No"
-                  />
-                  <MyFormInput
-                    value={myAddress?.city}
-                    name="city"
-                    placeHolder="City"
-                  />
-                </div>
-                <Button
-                  label={myAddress ? 'Update Address' : 'Save Address'}
-                  type="submit"
-                  fullWidth
-                />
-              </MyFormWrapper>
-            </div>
-          </div>
-          {/* <div className="bg-gray-100 border border-gray-300 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-gray-200 rounded-full">
-                <Package className="w-4 h-4 text-gray-500" />
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-normal text-text-primary">
-                  Total Order
-                </p>
-                <h3 className="text-2xl font-semibold text-title tracking-tight">
-                  345
-                </h3>
-              </div>
-            </div>
-          </div>
-          <div className="bg-gray-100 border border-gray-300 rounded-lg p-6 shadow-sm">
-            <div className="flex items-center space-x-4">
-              <div className="p-2 bg-gray-200 rounded-full">
-                <DollarSign className="w-4 h-4 text-gray-500" />
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-normal text-text-primary">
-                  Money Spend
-                </p>
-                <h3 className="text-2xl font-semibold text-title tracking-tight">
-                  $345
-                </h3>
-              </div>
-            </div>
-          </div> */}
+        {/* Address Section */}
+        <div className="bg-white rounded-2xl shadow-sm border p-6 space-y-6">
+          <h2 className="text-lg font-semibold text-primary">
+            Shipping Address
+          </h2>
+          <MBFormWrapper
+            onSubmit={handleAddUpdateAddress}
+            resolver={zodResolver(addAddressValidationSchema)}
+            className="space-y-4"
+          >
+            <MBFormInput
+              value={myAddress?.zipCode}
+              name="zipCode"
+              placeHolder="Zip Code"
+            />
+            <MBFormInput
+              value={myAddress?.pickupStreet}
+              name="pickupStreet"
+              placeHolder="Pickup Street"
+            />
+            <MBFormInput
+              value={myAddress?.houseNo}
+              name="houseNo"
+              placeHolder="House No"
+            />
+            <MBFormInput
+              value={myAddress?.city}
+              name="city"
+              placeHolder="City"
+            />
+            <Button type="submit" className="w-full">
+              {myAddress ? 'Update Address' : 'Save Address'}
+            </Button>
+          </MBFormWrapper>
         </div>
       </div>
     </div>

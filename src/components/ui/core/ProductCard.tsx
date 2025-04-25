@@ -13,7 +13,7 @@ import { useAppDispatch } from '@/redux/hooks';
 
 // import { IProduct } from '@/types';
 import { IMeal } from '@/types/meal';
-import { Heart, Star } from 'lucide-react';
+import { Scaling, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -46,7 +46,7 @@ const ProductCard = ({ product }: { product: IMeal }) => {
       </CardHeader>
 
       <CardContent className="p-2 mt-2">
-        <Link href={`/products/${product?._id}`} passHref>
+        <Link href={`/meals/${product?._id}`} passHref>
           <CardTitle
             title={product?.name}
             className="font-semibold cursor-pointer text-sm sm:text-base truncate"
@@ -107,7 +107,9 @@ const ProductCard = ({ product }: { product: IMeal }) => {
             size="sm"
             className="w-10 h-10 flex items-center justify-center rounded-full"
           >
-            <Heart />
+            <Link href={`/meals/${product?._id}`}>
+              <Scaling />
+            </Link>
           </Button>
         </div>
       </CardFooter>

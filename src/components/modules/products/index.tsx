@@ -5,7 +5,6 @@ import FilterSidebar from './filterSidebar';
 import { IMeal } from '@/types/meal';
 
 const AllMeals = ({ meals }: { meals: IMeal[] }) => {
-  console.log('meals from all meals', meals);
   return (
     <div className="flex gap-8 my-21">
       <div className="w-full max-w-sm ">

@@ -25,8 +25,6 @@ export function MBTable<TData, TValue>({
   columns,
   data,
 }: MBTableProps<TData, TValue>) {
-  console.log('data from manage', data, columns);
-
   const table = useReactTable({
     data,
     columns,

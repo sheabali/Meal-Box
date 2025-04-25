@@ -11,10 +11,9 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const userRole = await getCurrentUser(); // Get the current user's role
-  console.log('userRole', userRole); // Log the user role for debugging
+  const userRole = await getCurrentUser();
 
-  const { role } = userRole || {}; // Destructure the role from the user object
+  const { role } = userRole || {};
 
   return (
     <SidebarProvider>

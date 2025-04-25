@@ -91,7 +91,6 @@ export const updateOrderStatus = async (
   status: string,
   mealId: string
 ): Promise<any> => {
-  console.log('status', status);
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/order/change-status/${mealId}`,

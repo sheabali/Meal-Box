@@ -88,8 +88,6 @@ export default function UpdateMealsForm({ mealId }: any) {
     try {
       const res = await updateMeal(formData, mealId);
 
-      console.log('res', res);
-
       if (res.success) {
         toast.success(res.message);
         router.push('/provider/manage-menu/manage-meal');

@@ -12,12 +12,11 @@ const MealDetailsPage = async ({
 }) => {
   const { mealsId } = await params;
   const { data: meal } = await getSingleMeal(mealsId);
-  console.log('Meal Details:', meal);
 
   return (
     <NMContainer>
       <ProductBanner title="Meal - Details" path="Home - Meal - Meal Details" />
-      <MealDetails product={meal} />
+      <MealDetails meal={meal} />
     </NMContainer>
   );
 };

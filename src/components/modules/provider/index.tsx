@@ -15,9 +15,6 @@ import { MBTable } from '@/components/ui/core/MBTable';
 import DeleteConfirmationModal from '@/components/ui/core/MBModal';
 
 const ManageMeals = ({ meals }: { meals: IMeal[] }) => {
-  console.log('meal from manage page', meals);
-  // const [selectedIds, setSelectedIds] = useState<string[] | []>([]);
-
   const router = useRouter();
 
   const handleView = (meal: IMeal) => {
@@ -29,8 +26,6 @@ const ManageMeals = ({ meals }: { meals: IMeal[] }) => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
   const handleDelete = (data: IMeal) => {
-    console.log('Deleting product:', data);
-    console.log(data);
     setSelectedId(data?._id as string);
     setSelectedItem(data?.name);
     setModalOpen(true);
@@ -40,8 +35,6 @@ const ManageMeals = ({ meals }: { meals: IMeal[] }) => {
     try {
       if (selectedId) {
         const res = await deleteMeal(selectedId);
-
-        console.log('res', res);
 
         if (res.success) {
           toast.success(res.message);

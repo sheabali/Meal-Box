@@ -11,7 +11,6 @@ import {
   citySelector,
   clearCart,
   grandTotalSelector,
-  orderedProductsSelector,
   orderSelector,
   shippingAddressSelector,
   shippingCostSelector,
@@ -19,8 +18,7 @@ import {
 } from '@/redux/features/cartSlice';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import { createOrder } from '@/services/cart';
-// import { IOrder } from '@/types';
+import { createOrder } from '@/services/order';
 
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -32,7 +30,7 @@ export default function PaymentDetails() {
   const grandTotal = useAppSelector(grandTotalSelector);
   const city = useAppSelector(citySelector);
   const shippingAddress = useAppSelector(shippingAddressSelector);
-  const cartProducts = useAppSelector(orderedProductsSelector);
+  // const cartProducts = useAppSelector(orderedProductsSelector);
 
   const user = useUser();
 
@@ -54,16 +52,12 @@ export default function PaymentDetails() {
       if (!shippingAddress) {
         throw new Error('Please provide a shipping address.');
       }
-      if (cartProducts.length === 0) {
-        throw new Error('Cart is empty, what are you trying to order ?');
-      }
 
       let orderData;
 
       orderData = order;
 
       const res = await createOrder(orderData);
-      console.log(res);
 
       if (res.success) {
         toast.success(res.message, { id: orderLoading });
@@ -77,8 +71,6 @@ export default function PaymentDetails() {
     } catch (error: any) {
       toast.error(error.message, { id: orderLoading });
     }
-
-    console.log(order);
   };
 
   return (

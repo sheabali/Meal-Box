@@ -10,7 +10,6 @@ import Link from 'next/link';
 const FeaturedMeals = async () => {
   const { data: products } = await getAllMeals();
   const { meals } = products;
-  console.log('products', products);
 
   return (
     <NMContainer>

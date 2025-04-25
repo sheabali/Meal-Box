@@ -12,10 +12,8 @@ const roleBasedPrivateRoutes = {
 
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  console.log(pathname, 'pathname');
 
   const userInfo = await getCurrentUser();
-  console.log(userInfo, 'userInfo');
 
   if (!userInfo) {
     if (authRoutes.includes(pathname)) {
@@ -32,7 +30,7 @@ export const middleware = async (request: NextRequest) => {
 
   if (userInfo?.role && roleBasedPrivateRoutes[userInfo?.role as Role]) {
     const routes = roleBasedPrivateRoutes[userInfo?.role as Role];
-    console.log(routes, 'routes');
+
     if (routes.some((route) => pathname.match(route))) {
       return NextResponse.next();
     }

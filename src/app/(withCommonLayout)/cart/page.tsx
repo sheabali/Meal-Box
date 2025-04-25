@@ -56,12 +56,8 @@ const Stepper = ({ currentStep }: { currentStep: number }) => (
 
 const OrderMealPage = () => {
   const currentMeal = useAppSelector(currentProduct);
-  console.log('currentMeal', currentMeal);
-
-  console.log('currentMeal', currentMeal);
 
   const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-  console.log('stripeKey', stripeKey);
 
   if (!stripeKey) {
     console.error(
@@ -70,26 +66,10 @@ const OrderMealPage = () => {
   }
 
   const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
-  console.log('stripePromise', stripePromise);
 
-  // useEffect(() => {
-  //   const fetchMeal = async () => {
-  //     try {
-  //       const meal = await getSingleMeal(id as string);
-  //       setCurrentMeal(meal);
-  //     } catch (error) {
-  //       console.error('Failed to fetch meal:', error);
-  //     }
-  //   };
-
-  //   fetchMeal();
-  // }, [id]);
-  // const user = useUser();
   const [myAddress, setMyAddress] = useState<any>(null);
-  console.log('myAddress form page ', myAddress);
 
   const me = useUser();
-  console.log('user', me.user?.userId);
 
   useEffect(() => {
     const fetchAddress = async () => {
@@ -128,7 +108,6 @@ const OrderMealPage = () => {
   };
 
   const handleNextStep = async (paymentMethodId: string) => {
-    console.log(paymentMethodId, 'paymentMethodId');
     const res = await handleAsyncWithToast(async () => {
       return createOrder({
         paymentMethodId: paymentMethodId,
@@ -139,12 +118,11 @@ const OrderMealPage = () => {
         deliveryAddress: `House: ${myAddress?.houseNo}, Street: ${myAddress?.pickupStreet}, Zipcode: ${myAddress?.zipCode}, City: ${myAddress?.city}`,
       });
     }, 'Ordering...');
-    console.log(res, 'res');
+
     if (res?.data?.success) {
       setCurrentStep((prev) => prev + 1);
       localStorage.removeItem('pickupDate');
       localStorage.removeItem('customization');
-      console.log(res?.data);
     }
   };
 

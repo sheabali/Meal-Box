@@ -39,7 +39,7 @@ export default function CustomerProfilePage() {
   const [dietaryPreferences, setDietaryPreferences] = useState<string[]>([]);
   const [responseOfMyAddress, setResponseOfMyAddress] = useState<any>(null);
   const [users, setUsers] = useState<any>(null);
-  console.log('users', users);
+
   const {
     register,
     handleSubmit,
@@ -129,7 +129,6 @@ export default function CustomerProfilePage() {
     const payload = {
       ...formData,
     };
-    console.log('payload', payload);
 
     if (!myAddress?._id) {
       const response = await addAddress(payload);
@@ -139,7 +138,6 @@ export default function CustomerProfilePage() {
       }
     } else {
       const response = await updateAddress(payload);
-      console.log('response', response);
 
       if (response?.data) {
         toast.success('Address updated successfully');

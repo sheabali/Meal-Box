@@ -20,7 +20,7 @@ export const getAllMeals = async () => {
     }
 
     const data = await res.json();
-    console.log('data', data);
+
     return data;
   } catch (error: any) {
     console.error('Error fetching orders:', error);
@@ -52,7 +52,7 @@ export const getAllMeal = async () => {
     }
 
     const data = await res.json();
-    console.log('data', data);
+
     return data;
   } catch (error: any) {
     console.error('Error fetching orders:', error);
@@ -83,7 +83,6 @@ export const getSingleMeal = async (mealId: string) => {
 
 // add product
 export const addMeal = async (mealData: FormData): Promise<any> => {
-  console.log('mealData', mealData);
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/providers/menu`,
@@ -95,7 +94,7 @@ export const addMeal = async (mealData: FormData): Promise<any> => {
         },
       }
     );
-    console.log('res', res);
+
     revalidateTag('MEAL');
     return res.json();
   } catch (error: any) {
@@ -108,7 +107,6 @@ export const updateMeal = async (
   mealData: FormData,
   mealId: string
 ): Promise<any> => {
-  console.log('mealData', mealData, mealId);
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_API}/providers/${mealId}`,

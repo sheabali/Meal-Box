@@ -11,9 +11,6 @@ import { usePathname, useRouter } from 'next/navigation';
 const ProfileCard = () => {
   const { user, setIsLoading } = useUser();
 
-  // const { user } = useSelector(selectCurrentUser);
-  console.log('user', user);
-
   const router = useRouter();
   const pathname = usePathname();
 

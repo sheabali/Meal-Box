@@ -21,7 +21,6 @@ const ProductCard = ({ product }: { product: IMeal }) => {
   const dispatch = useAppDispatch();
 
   const handleAddProduct = (product: IMeal) => {
-    console.log(product);
     dispatch(addProduct(product));
   };
 

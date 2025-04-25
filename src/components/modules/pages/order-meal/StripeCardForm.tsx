@@ -20,8 +20,6 @@ const StripeCardForm = ({
   const [error, setError] = useState<string | null>(null);
   const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
 
-  console.log(paymentMethodId);
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
@@ -52,14 +50,12 @@ const StripeCardForm = ({
       setLoading(false);
     } else {
       if (paymentMethod && paymentMethod.id) {
-        console.log('PaymentMethod Created:', paymentMethod);
-
         setPaymentMethodId(paymentMethod?.id);
         if (paymentMethod?.id) {
           handleNextStep(paymentMethod.id);
         }
       }
-      // console.log('PaymentMethod Created:', paymentMethod);
+
       setLoading(false);
       // Send paymentMethod.id to your backend for further processing
     }

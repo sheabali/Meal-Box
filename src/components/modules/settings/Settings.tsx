@@ -27,7 +27,6 @@ const AccountSettings = () => {
   const onSubmit: SubmitHandler<TPasswordData> = async (data) => {
     try {
       const res = await changePassword(data);
-      console.log('API response:', res);
 
       if (res?.error) {
         toast.error(res.error);

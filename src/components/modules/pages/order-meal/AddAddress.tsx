@@ -35,7 +35,6 @@ const AddAddress = ({
   const [emptyDateError, setEmptyDateError] = useState('');
   const [loading, setLoading] = useState(true);
   const [myAddress, setMyAddress] = useState<any>(null);
-  console.log('myAddress', myAddress?.zipCode);
 
   const form = useForm<FormDataType>({
     resolver: zodResolver(validationSchema),
@@ -53,7 +52,6 @@ const AddAddress = ({
     const fetchAddress = async () => {
       try {
         const res = await getMyAddress();
-        console.log('res', res?.data);
 
         if (res?.data) {
           setMyAddress(res.data);

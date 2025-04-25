@@ -111,11 +111,10 @@ export default function ProviderProfilePage() {
       ...data,
       cuisinePreferences,
     };
-    console.log('payload', payload);
 
     try {
       const res = await updateProviderProfile(payload);
-      console.log('response', res);
+
       if (res?.data) {
         setIsSubmitting(false);
         reset();
@@ -131,18 +130,16 @@ export default function ProviderProfilePage() {
     const payload = {
       ...formData,
     };
-    console.log('payload', payload);
 
     if (!myAddress?._id) {
       const response = await addAddress(payload);
-      console.log('response', response);
+
       if (response?.data?.success) {
         toast.success('Address added successfully');
         reset();
       }
     } else {
       const response = await updateAddress(payload);
-      console.log('response', response);
 
       if (response?.data) {
         toast.success('Address updated successfully');

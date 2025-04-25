@@ -18,7 +18,7 @@ const FeaturedMeals = async () => {
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-2xl">Featured Meals</h2>
-            <Link href="/products">
+            <Link href="/meals">
               <Button variant="outline" className="rounded-full">
                 All Collection
               </Button>

@@ -1,5 +1,5 @@
-import MealDetails from '@/components/modules/products';
 import ProductBanner from '@/components/modules/products/banner';
+import MealDetails from '@/components/modules/products/productDetails';
 import NMContainer from '@/components/ui/core/MBContainer';
 import { getSingleMeal } from '@/services/meal';
 
@@ -12,6 +12,7 @@ const MealDetailsPage = async ({
 }) => {
   const { mealsId } = await params;
   const { data: meal } = await getSingleMeal(mealsId);
+  console.log('Meal Details:', meal);
 
   return (
     <NMContainer>

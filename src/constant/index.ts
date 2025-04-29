@@ -5,4 +5,5 @@ export const protectedRoutes = [
   '/provider/:page',
   '/customer',
   '/customer/:page',
+  '/cart',
 ];

@@ -112,77 +112,103 @@ const AddAddress = ({
   if (loading) return <Loading label="Fetching your address..." />;
 
   return (
-    <div className="px-5 flex flex-col justify-center max-w-xl w-full mx-auto">
-      <div className="text-center mb-6">
-        <h2 className="text-xl md:text-3xl font-semibold text-primary">
+    <div className="px-4  border-green-500 py-10 md:py-16 flex flex-col justify-center max-w-3xl w-full mx-auto">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-bold text-primary mb-2">
           Pick up Address
         </h2>
+        <p className="text-gray-600 text-sm md:text-base">
+          Please provide your address and preferred meal date.
+        </p>
       </div>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="space-y-4">
-          <div className="w-full space-y-2">
-            <Label htmlFor="customization">Meal Customization</Label>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 bg-white shadow-xl rounded-2xl p-6 md:p-10"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label htmlFor="customization" className="text-gray-700">
+              Meal Customization{' '}
+              <span className="text-gray-400">(optional)</span>
+            </Label>
             <Input
               id="customization"
-              placeholder="Optional"
+              placeholder="Add any preferences"
               {...form.register('customization')}
+              className="mt-2 py-6"
             />
           </div>
 
-          <div className="w-full space-y-2">
-            <Label htmlFor="zipCode">Zip Code</Label>
+          <div>
+            <Label htmlFor="zipCode" className="text-gray-700">
+              Zip Code
+            </Label>
             <Input
               placeholder="Zip Code"
               id="zipCode"
               {...form.register('zipCode')}
+              className="mt-2 py-6"
             />
           </div>
 
-          <div className="w-full space-y-2">
-            <Label htmlFor="pickupStreet">Pickup Street</Label>
+          <div>
+            <Label htmlFor="pickupStreet" className="text-gray-700">
+              Pickup Street
+            </Label>
             <Input
               placeholder="Pickup Street"
               id="pickupStreet"
               {...form.register('pickupStreet')}
+              className="mt-2 py-6"
             />
           </div>
 
-          <div className="w-full space-y-2">
-            <Label htmlFor="houseNo">House No</Label>
+          <div>
+            <Label htmlFor="houseNo" className="text-gray-700">
+              House No
+            </Label>
             <Input
               placeholder="House No"
               id="houseNo"
               {...form.register('houseNo')}
+              className="mt-2 py-6"
             />
           </div>
-
-          <div className="w-full space-y-2">
-            <Label htmlFor="city">City</Label>
-            <Input placeholder="City" id="city" {...form.register('city')} />
-          </div>
-
-          <div className="w-full space-y-2">
-            <Label>Select your receive date</Label>
-            <Card className="p-2">
-              <Calendar
-                className="w-full"
-                mode="single"
-                selected={pickupDate}
-                onSelect={(date) => {
-                  setPickupDate(date);
-                  setEmptyDateError('');
-                }}
-                disabled={(date) => date < new Date()}
-              />
-            </Card>
-            {emptyDateError && (
-              <p className="text-red-500 text-sm">{emptyDateError}</p>
-            )}
-          </div>
+        </div>
+        <div>
+          <Label htmlFor="city" className="text-gray-700">
+            City
+          </Label>
+          <Input
+            placeholder="City"
+            id="city"
+            {...form.register('city')}
+            className="mt-2 py-6"
+          />
         </div>
 
-        <Button type="submit" className="w-full">
+        <Label className="text-gray-700">Receive Date</Label>
+        <Card className="w-[100%] mx-auto p-3 mt-1 bg-gray-50 border border-gray-200 shadow-sm ">
+          <Calendar
+            className="w-[100%]  mx-auto"
+            mode="single"
+            selected={pickupDate}
+            onSelect={(date) => {
+              setPickupDate(date);
+              setEmptyDateError('');
+            }}
+            disabled={(date) => date < new Date()}
+          />
+        </Card>
+        {emptyDateError && (
+          <p className="text-red-500 text-sm mt-1">{emptyDateError}</p>
+        )}
+
+        <Button
+          type="submit"
+          className="w-full mt-6 text-white font-semibold text-base py-6"
+        >
           {myAddress ? 'Update Address' : 'Save Address'}
         </Button>
       </form>

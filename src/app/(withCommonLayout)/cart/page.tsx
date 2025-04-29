@@ -20,6 +20,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
 import { useUser } from '@/context/UserContext';
+import Image from 'next/image';
 
 const steps = [
   'Shipping Address',
@@ -139,6 +140,21 @@ const OrderMealPage = () => {
   // ) {
   //   return <Loading />;
   // }
+
+  if (!currentMeal) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+        <Image
+          src="https://i.ibb.co.com/nqNxgb86/empty-cart.png" // Replace with your actual image path
+          alt="No meal selected"
+          className="w-64 h-64 object-contain mb-6"
+          width={256}
+          height={256}
+        />
+        <p className="text-lg font-semibold text-gray-700">No meal selected</p>
+      </div>
+    );
+  }
 
   return (
     <div className="py-10 px-4 max-w-5xl mx-auto">

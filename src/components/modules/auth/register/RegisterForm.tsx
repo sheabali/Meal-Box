@@ -13,12 +13,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import Link from 'next/link';
-// import Logo from '@/assets/svgs/Logo';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { registrationSchema } from './registerValidation';
-// import { registerUser } from '@/services/AuthService';
-import { toast } from 'sonner';
 import { registerUser } from '@/services/AuthService';
+import { toast } from 'sonner';
 import { useUser } from '@/context/UserContext';
 
 export default function RegisterForm() {
@@ -50,123 +48,135 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="border-2 border-gray-300 rounded-xl flex-grow max-w-md w-full p-5">
-      <div className="flex items-center space-x-4 ">
-        {/* <Logo /> */}
-        <div>
-          <h1 className="text-xl font-semibold">Register</h1>
-          <p className="font-extralight text-sm text-gray-600">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Register</h1>
+          <p className="text-sm text-gray-600">
             Join us today and start your journey!
           </p>
         </div>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input
-                    className="mb-3"
-                    {...field}
-                    value={field.value || ''}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    className="mb-3"
-                    type="email"
-                    {...field}
-                    value={field.value || ''}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone Number</FormLabel>
-                <FormControl>
-                  <Input
-                    className="mb-3"
-                    type="phoneNumber"
-                    {...field}
-                    value={field.value || ''}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    className="mb-3"
-                    type="password"
-                    {...field}
-                    value={field.value || ''}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="passwordConfirm"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" {...field} value={field.value || ''} />
-                </FormControl>
 
-                {passwordConfirm && password !== passwordConfirm ? (
-                  <FormMessage> Password does not match </FormMessage>
-                ) : (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="py-6"
+                      {...field}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
                   <FormMessage />
-                )}
-              </FormItem>
-            )}
-          />
+                </FormItem>
+              )}
+            />
 
-          <Button
-            disabled={!!passwordConfirm && password !== passwordConfirm}
-            type="submit"
-            className="mt-5 w-full"
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="py-6"
+                      type="email"
+                      {...field}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone Number</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="py-6"
+                      type="tel"
+                      {...field}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="py-6"
+                      type="password"
+                      {...field}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="passwordConfirm"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="py-6"
+                      type="password"
+                      {...field}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
+                  {passwordConfirm && password !== passwordConfirm ? (
+                    <FormMessage>Password does not match</FormMessage>
+                  ) : (
+                    <FormMessage />
+                  )}
+                </FormItem>
+              )}
+            />
+
+            <Button
+              type="submit"
+              disabled={passwordConfirm !== password || isSubmitting}
+              className="w-full py-6 mt-4"
+            >
+              {isSubmitting ? 'Registering...' : 'Register'}
+            </Button>
+          </form>
+        </Form>
+
+        <p className="text-sm text-center text-gray-600 mt-6">
+          Already have an account?{' '}
+          <Link
+            href="/login"
+            className="text-primary font-medium hover:underline"
           >
-            {isSubmitting ? 'Registering....' : 'Register'}
-          </Button>
-        </form>
-      </Form>
-      <p className="text-sm text-gray-600 text-center my-3 mx-4">
-        Already have an account ?
-        <Link href="/login" className="text-primary mx-4">
-          Login
-        </Link>
-      </p>
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

@@ -18,7 +18,6 @@ import { registrationSchema } from './registerValidation';
 import { registerUser } from '@/services/AuthService';
 import { toast } from 'sonner';
 import { useUser } from '@/context/UserContext';
-import '../register/registerForm.css';
 import {
   Select,
   SelectContent,

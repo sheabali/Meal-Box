@@ -14,8 +14,8 @@ import AddAddress from '@/components/modules/pages/order-meal/AddAddress';
 
 import { createOrder, getAddress } from '@/services/order';
 
-import { currentProduct } from '@/redux/features/cartSlice';
-import { useAppSelector } from '@/redux/hooks';
+import { clearCart, currentProduct } from '@/redux/features/cartSlice';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
@@ -69,6 +69,8 @@ const OrderMealPage = () => {
 
   const [myAddress, setMyAddress] = useState<any>(null);
 
+  const dispatch = useAppDispatch();
+
   const me = useUser();
 
   useEffect(() => {
@@ -120,6 +122,7 @@ const OrderMealPage = () => {
     }, 'Ordering...');
 
     if (res?.data?.success) {
+      dispatch(clearCart());
       setCurrentStep((prev) => prev + 1);
       localStorage.removeItem('pickupDate');
       localStorage.removeItem('customization');

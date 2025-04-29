@@ -1,8 +1,10 @@
 import { useRef } from 'react';
 import { Provider } from 'react-redux';
 import { AppStore, makeStore } from '@/redux/store';
-import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
+import Loading from '@/components/ui/core/loading';
+
 // import Loading from '@/components/ui/loading';
 
 const StoreProvider = ({ children }: { children: React.ReactNode }) => {
@@ -16,10 +18,9 @@ const StoreProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Provider store={storeRef.current}>
-      {children}
-      {/* <PersistGate loading={<Loading />} persistor={persistedStore}>
+      <PersistGate loading={<Loading />} persistor={persistedStore}>
         {children}
-      </PersistGate> */}
+      </PersistGate>
     </Provider>
   );
 };

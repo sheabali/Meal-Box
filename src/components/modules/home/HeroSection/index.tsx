@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import styles from './HeroSection.module.css';
 import NMContainer from '@/components/ui/core/MBContainer';
+import Link from 'next/link';
 
 const HeroSection = () => {
   return (
@@ -20,12 +21,14 @@ const HeroSection = () => {
               See our available plans and menu!
             </p>
 
-            <Button
-              variant="outline"
-              className="mt-6 cursor-pointer text-black font-semibold border-white "
-            >
-              GET STARTED
-            </Button>
+            <Link href="/meals">
+              <Button
+                variant="outline"
+                className="mt-6 cursor-pointer text-black font-semibold border-white "
+              >
+                GET STARTED
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

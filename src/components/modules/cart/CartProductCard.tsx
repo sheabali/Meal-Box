@@ -1,31 +1,32 @@
 'use client'; // make sure this is at the top **only if using App Router**
 
 import { Button } from '@/components/ui/button';
-import { currencyFormatter } from '@/lib/currencyFormatter';
-import {
-  CartProduct,
-  decrementOrderQuantity,
-  incrementOrderQuantity,
-  removeProduct,
-} from '@/redux/features/cartSlice';
-import { useAppDispatch } from '@/redux/hooks';
+// import { currencyFormatter } from '@/lib/currencyFormatter';
+// import {
+//   CartProduct,
+//   decrementOrderQuantity,
+//   incrementOrderQuantity,
+//   removeProduct,
+// } from '@/redux/features/cartSlice';
+
+import { IMeal } from '@/types/meal';
 import { Minus, Plus, Trash } from 'lucide-react';
 import Image from 'next/image';
 
-export default function CartProductCard({ product }: { product: CartProduct }) {
-  const dispatch = useAppDispatch();
+export default function CartProductCard({ product }: { product: IMeal }) {
+  // const dispatch = useAppDispatch();
 
-  const handleIncrementProduct = (id: string) => {
-    dispatch(incrementOrderQuantity(id));
-  };
+  // const handleIncrementProduct = (id: string) => {
+  //   dispatch(incrementOrderQuantity(id));
+  // };
 
-  const handleDecrementProduct = (id: string) => {
-    dispatch(decrementOrderQuantity(id));
-  };
+  // const handleDecrementProduct = (id: string) => {
+  //   dispatch(decrementOrderQuantity(id));
+  // };
 
-  const handleRemoveProduct = (id: string) => {
-    dispatch(removeProduct(id));
-  };
+  // const handleRemoveProduct = (id: string) => {
+  //   dispatch(removeProduct(id));
+  // };
 
   return (
     <div className="bg-white rounded-lg flex p-5 gap-5">
@@ -55,35 +56,35 @@ export default function CartProductCard({ product }: { product: CartProduct }) {
           </p>
           <p>
             <span className="text-gray-500">Stock Availability:</span>{' '}
-            <span className="font-semibold">{product?.stock}</span>
+            {/* <span className="font-semibold">{product?.stock}</span> */}
           </p>
         </div>
 
         <hr className="my-1" />
 
         <div className="flex items-center justify-between">
-          <h2>
+          {/* <h2>
             Price:{' '}
             {product.offerPrice
               ? currencyFormatter(product.offerPrice)
               : currencyFormatter(product.price)}
-          </h2>
+          </h2> */}
 
           <div className="flex items-center gap-2">
             <p className="text-gray-500 font-semibold">Quantity</p>
 
             <Button
-              onClick={() => handleDecrementProduct(product._id)}
+              // onClick={() => handleDecrementProduct(product._id)}
               variant="outline"
               className="size-8 rounded-sm"
             >
               <Minus />
             </Button>
 
-            <p className="font-semibold text-xl p-2">{product.orderQuantity}</p>
+            {/* <p className="font-semibold text-xl p-2">{product.orderQuantity}</p> */}
 
             <Button
-              onClick={() => handleIncrementProduct(product._id)}
+              // onClick={() => handleIncrementProduct(product._id)}
               variant="outline"
               className="size-8 rounded-sm"
             >
@@ -91,7 +92,7 @@ export default function CartProductCard({ product }: { product: CartProduct }) {
             </Button>
 
             <Button
-              onClick={() => handleRemoveProduct(product._id)}
+              // onClick={() => handleRemoveProduct(product._id)}
               variant="outline"
               className="size-8 rounded-sm"
             >

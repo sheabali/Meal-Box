@@ -69,9 +69,6 @@ export const getSingleMeal = async (mealId: string) => {
         next: {
           tags: ['PRODUCT'],
         },
-        headers: {
-          Authorization: (await cookies()).get('accessToken')!.value,
-        },
       }
     );
     const data = await res.json();

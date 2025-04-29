@@ -1,8 +1,7 @@
-import AllProducts from '@/components/modules/products/productDetails';
 import ProductBanner from '@/components/modules/products/banner';
-import CategoryCard from '@/components/ui/core/CategoryCard';
+
 import NMContainer from '@/components/ui/core/MBContainer';
-import { getAllMeal, getAllMeals } from '@/services/meal';
+import { getAllMeals } from '@/services/meal';
 import AllMeals from '@/components/modules/products';
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
@@ -13,6 +12,7 @@ const AllMealsPage = async ({
   searchParams: SearchParams;
 }) => {
   const query = await searchParams;
+  console.log(query);
 
   // const { data: categories } = await getAllMeal();
   const { data: meals } = await getAllMeals();

@@ -176,7 +176,9 @@ const ManageOrder = ({ order }: TCategoriesProps) => {
   ];
 
   const columns =
-    user?.user?.role === 'provider' ? providerColumns : customerColumns;
+    user?.user?.role === ('provider' as string)
+      ? providerColumns
+      : customerColumns;
 
   return <MBTable data={order || []} columns={columns} />;
 };

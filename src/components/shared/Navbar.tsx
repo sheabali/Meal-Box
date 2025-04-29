@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '../ui/button';
-import { Heart, LogOut, ShoppingBag } from 'lucide-react';
-import logo from '@/assets/svgs/vecteezy_fresh-meal-logo-with-a-combination-of-fresh-food-and-box_16467705.jpg';
+import { Heart, LogOut } from 'lucide-react';
+import logo from '@/assets/logo/orLogo.png';
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -35,40 +35,30 @@ export default function Navbar() {
 
   return (
     <header className="border-b w-full">
-      <div className="container flex justify-between items-center mx-auto h-16 px-3">
+      <div className="container bg-green-600 flex justify-between items-center mx-auto h-16 px-3">
         <Link href="/">
-          <h1 className="text-2xl font-black flex items-center">
-            <Image
-              src={logo}
-              alt="Eat Clean"
-              width={40}
-              height={40}
-              className="w-10 h-10 object-cover mr-2"
-            />
-            <span className="text-primary">Eat Clean</span>
-          </h1>
+          <Image
+            src={logo}
+            alt="Logo"
+            width={130}
+            height={130}
+            className=" rounded object-cover mr-2"
+          />
         </Link>
         <div className="max-w-md  flex-grow">
           <input
             type="text"
             placeholder="Search for products"
-            className="w-full max-w-6xl border border-gray-300 rounded-full py-2 px-5"
+            className="w-full max-w-6xl border bg-white border-gray-300 rounded-full py-2 px-5"
           />
         </div>
         <nav className="flex gap-2">
           <Button variant="outline" className="rounded-full p-0 size-10">
             <Heart />
           </Button>
-          <Link href="/cart">
-            <Button variant="outline" className="rounded-full p-0 size-10">
-              <ShoppingBag />
-            </Button>
-          </Link>
+
           {user ? (
             <>
-              <Link href="/create-shop">
-                <Button variant="outline">Create Store</Button>
-              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger>
                   <Avatar>

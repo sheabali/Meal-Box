@@ -1,10 +1,10 @@
-import { Loader2 } from 'lucide-react';
+import { Loader } from 'lucide-react';
 
-const Loading = ({ label = 'Loading...' }: { label?: string }) => {
+const Loading = ({ label = '' }: { label?: string }) => {
   return (
-    <div className="flex flex-col items-center justify-center py-10 gap-4">
-      <Loader2 className="h-10 w-10 animate-spin text-primary" />
-      <p className="text-muted-foreground text-sm">{label}</p>
+    <div className="flex items-center justify-center py-10 gap-4">
+      <Loader className="size-6 animate-spin text-3xl text-black" />
+      <p className="text-muted-foreground text-xl">{label}</p>
     </div>
   );
 };

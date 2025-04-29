@@ -2,7 +2,7 @@
 
 import { Button } from '../ui/button';
 import { Heart, LogOut } from 'lucide-react';
-import logo from '@/assets/logo/orLogo.png';
+import logo from '@/assets/logo/final.png';
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -35,13 +35,13 @@ export default function Navbar() {
 
   return (
     <header className="border-b w-full">
-      <div className="container bg-green-600 flex justify-between items-center mx-auto h-16 px-3">
+      <div className="container bg-[#00c951] flex justify-between items-center mx-auto h-[75px] px-3">
         <Link href="/">
           <Image
             src={logo}
             alt="Logo"
-            width={130}
-            height={130}
+            width={160}
+            height={160}
             className=" rounded object-cover mr-2"
           />
         </Link>

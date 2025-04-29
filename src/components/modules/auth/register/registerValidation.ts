@@ -8,6 +8,8 @@ export const registrationSchema = z.object({
   email: z
     .string({ required_error: 'Email is required' })
     .email('Invalid email address'),
+  role: z.string({ required_error: 'role is required' }),
+
   phoneNumber: z
     .string({ required_error: 'Phone number is Required' })
     .min(10, 'Phone number must be at least 10 characters'),

@@ -19,6 +19,15 @@ import { registerUser } from '@/services/AuthService';
 import { toast } from 'sonner';
 import { useUser } from '@/context/UserContext';
 import '../register/registerForm.css';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useRouter } from 'next/navigation';
+import Loading from '@/components/shared/Loading';
 
 export default function RegisterForm() {
   const form = useForm({
@@ -26,6 +35,8 @@ export default function RegisterForm() {
   });
 
   const { setIsLoading } = useUser();
+
+  const router = useRouter();
 
   const {
     formState: { isSubmitting },
@@ -35,11 +46,19 @@ export default function RegisterForm() {
   const passwordConfirm = form.watch('passwordConfirm');
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    const { role } = data;
+
+    const modifiedData = {
+      ...data,
+      role: role.toLowerCase(),
+    };
+
     try {
-      const res = await registerUser(data);
+      const res = await registerUser(modifiedData);
       setIsLoading(true);
       if (res?.success) {
         toast.success(res?.message);
+        router.push('/');
       } else {
         toast.error(res?.message);
       }
@@ -118,6 +137,33 @@ export default function RegisterForm() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Role</FormLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={(value) => field.onChange(value)}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {['Customer', 'Provider'].map((role) => (
+                          <SelectItem key={role} value={role}>
+                            {role}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -166,7 +212,7 @@ export default function RegisterForm() {
                 disabled={passwordConfirm !== password || isSubmitting}
                 className="w-full py-6 mt-4"
               >
-                {isSubmitting ? 'Registering...' : 'Register'}
+                {isSubmitting ? <Loading /> : 'Register'}
               </Button>
             </form>
           </Form>

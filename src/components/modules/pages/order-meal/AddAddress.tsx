@@ -96,7 +96,6 @@ const AddAddress = ({
 
     const payload = {
       ...formData,
-      pickupStreet: dayjs(pickupDate).format('YYYY-MM-DD'),
     };
     delete payload.customization;
 

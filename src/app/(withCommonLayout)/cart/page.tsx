@@ -2,6 +2,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import amex from '../../../assets/payment/amex.png';
+import mar from '../../../assets/payment/mar.png';
+import paypal from '../../../assets/payment//paypal.png';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,7 +14,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import StripeCardForm from '@/components/modules/pages/order-meal/StripeCardForm';
 import AddAddress from '@/components/modules/pages/order-meal/AddAddress';
-
+import { MapPin, ArrowRight, ArrowLeft } from 'lucide-react';
 import { createOrder, getAddress } from '@/services/order';
 
 import { clearCart, currentProduct } from '@/redux/features/cartSlice';
@@ -21,6 +24,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { handleAsyncWithToast } from '@/utils/handleAsyncWithToast';
 import { useUser } from '@/context/UserContext';
 import Image from 'next/image';
+import { Input } from '@/components/ui/input';
 
 const steps = [
   'Shipping Address',
@@ -88,9 +92,14 @@ const OrderMealPage = () => {
   }, []);
   const [currentStep, setCurrentStep] = useState<number>(0); // Ensure currentStep is explicitly typed as a number
 
-  const [pickupDate, setPickupDate] = useState('');
+  // const [pickupDate, setPickupDate] = useState('');
   const [customization, setCustomization] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('stripe');
+
+  const pickupDate = localStorage.getItem('pickupDate');
+  // const customization = localStorage.removeItem('customization');
+  console.log('pickupDate', pickupDate);
+  console.log('customization', customization);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -100,9 +109,9 @@ const OrderMealPage = () => {
     if (currentStep === 0 && !myAddress) {
       return toast.error('Please add your address to continue.');
     }
-    if (currentStep === 1 && !pickupDate) {
-      return toast.error('Please select a pickup date.');
-    }
+    // if (currentStep === 1 && !pickupDate) {
+    //   return toast.error('Please select a pickup date.');
+    // }
     setCurrentStep((prev) => prev + 1);
   };
 
@@ -121,7 +130,7 @@ const OrderMealPage = () => {
         deliveryAddress: `House: ${myAddress?.houseNo}, Street: ${myAddress?.pickupStreet}, Zipcode: ${myAddress?.zipCode}, City: ${myAddress?.city}`,
       });
     }, 'Ordering...');
-
+    console.log('res', res);
     if (res?.data?.success) {
       dispatch(clearCart());
       setCurrentStep((prev) => prev + 1);
@@ -163,70 +172,101 @@ const OrderMealPage = () => {
       {currentStep === 0 && <AddAddress setCurrentStep={setCurrentStep} />}
 
       {currentStep === 1 && (
-        <Card className="mx-auto w-full max-w-xl">
-          <CardContent className="p-6 space-y-6">
-            <h2 className="text-2xl font-semibold text-center text-primary uppercase">
-              Summary
-            </h2>
-            <Separator />
-            <div className="space-y-4 text-center">
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
-                  Pickup Location
-                </h3>
-                <p className="text-primary">
-                  {`House: ${myAddress.data?.houseNo} Street: ${myAddress.data?.pickupStreet} City: ${myAddress.data?.city}`}
-                </p>
+        <Card className="mx-auto border-none w-full max-w-xl shadow-lg rounded-2xl">
+          <CardContent className="p-6 space-y-8">
+            <div className="text-center space-y-2">
+              <h2 className="text-xl font-bold uppercase text-primary tracking-wide">
+                Summary
+              </h2>
+              <Separator className="mx-auto w-16" />
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 text-sm">
+              <div className="col-span-2 space-y-1">
+                <span className="flex gap-2 items-end font-medium text-muted-foreground">
+                  <MapPin size={30} />
+                  <p className="text-2xl ">Pickup Location</p>
+                </span>
+
+                <div className=" overflow-x-auto mt-4 rounded border ">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-100 text-muted-foreground">
+                      <tr>
+                        <th className="px-4 py-2">Field</th>
+                        <th className="px-4 py-2">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-background text-primary">
+                      <tr className="border">
+                        <td className="px-4 py-2 text-black font-medium">
+                          House
+                        </td>
+                        <td className="px-4 py-2 text-gray-600">
+                          {myAddress.data?.houseNo}
+                        </td>
+                      </tr>
+                      <tr className="border">
+                        <td className="px-4 py-2 text-black font-medium">
+                          Street
+                        </td>
+                        <td className="px-4 py-2 text-gray-600">
+                          {myAddress.data?.pickupStreet}
+                        </td>
+                      </tr>
+                      <tr className="border">
+                        <td className="px-4 py-2 text-black font-medium">
+                          City
+                        </td>
+                        <td className="px-4 py-2 text-gray-600">
+                          {myAddress.data?.city}
+                        </td>
+                      </tr>
+                      <tr className="border">
+                        <td className="px-4 py-2 text-black font-medium">
+                          Zip Code
+                        </td>
+                        <td className="px-4 py-2 text-gray-600">
+                          {myAddress.data?.zipCode}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
-                  Zip code
-                </h3>
-                <p className="text-primary">{myAddress.data?.zipCode}</p>
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
+
+              <div className="space-y-1 col-span-2">
+                <h3 className="font-medium text-muted-foreground">
                   Customization
                 </h3>
-                <input
+                <Input
                   type="text"
                   value={customization}
                   onChange={(e) => setCustomization(e.target.value)}
-                  className="w-full border rounded px-3 py-2 text-sm"
+                  className="w-full border py-6 border-input rounded-md px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                   placeholder="Optional custom instructions"
                 />
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
-                  Pickup Date
-                </h3>
-                <input
-                  type="date"
-                  value={pickupDate}
-                  onChange={(e) => setPickupDate(e.target.value)}
-                  className="w-full border rounded px-3 py-2 text-sm"
-                />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-muted-foreground">
+              <div className="col-span-2">
+                <h3 className="font-medium text-center text-muted-foreground">
                   Subtotal
                 </h3>
-                <p className="text-primary font-semibold">
+                <p className="text-primary text-center font-semibold">
                   ${currentMeal?.price?.toFixed(2)}
                 </p>
               </div>
             </div>
-            <div className="space-y-4 pt-4">
-              <Button onClick={handleContinue} className="w-full">
-                Next
-              </Button>
+
+            <div className="pt-4 grid gap-4 sm:grid-cols-2">
               <Button
                 variant="outline"
                 onClick={handleBack}
-                disabled={currentStep === (0 as number)}
-                className="w-full"
+                className="w-full gap-2 py-6"
               >
+                <ArrowLeft className="w-4 h-4" />
                 Back
+              </Button>
+              <Button onClick={handleContinue} className="w-full gap-2 py-6">
+                Next <ArrowRight className="w-4 h-4" />
               </Button>
             </div>
           </CardContent>
@@ -243,19 +283,53 @@ const OrderMealPage = () => {
             <div className="space-y-4 text-center">
               <Button
                 variant={paymentMethod === 'stripe' ? 'default' : 'outline'}
-                onClick={() => setPaymentMethod('stripe')}
-                className="w-full"
+                onClick={() => {
+                  setPaymentMethod('stripe');
+                  setTimeout(() => handleContinue(), 0); // ensures state is updated before navigating
+                }}
+                className={cn(
+                  'w-full py-6 px-4 flex flex-col sm:flex-row items-center gap-4 sm:gap-2',
+                  paymentMethod === 'stripe' && 'bg-primary text-white'
+                )}
               >
-                Pay with Card (Stripe)
+                {/* Left Side: Text */}
+                <span className="text-lg font-medium">Pay with Stripe</span>
+
+                {/* Center: Card Icons */}
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={mar}
+                    alt="Mastercard"
+                    width={38}
+                    height={24}
+                    className="h-6 w-auto"
+                  />
+                  <Image
+                    src={paypal}
+                    alt="Visa"
+                    width={38}
+                    height={24}
+                    className="h-6 w-auto"
+                  />
+                  <Image
+                    src={amex}
+                    alt="American Express"
+                    width={38}
+                    height={24}
+                    className="h-6 w-auto"
+                  />
+                </div>
+
+                {/* Right Side: Arrow Icon */}
+                <ArrowRight className="w-6 h-6" />
               </Button>
-              {/* You can add more payment options here */}
-            </div>
-            <div className="space-y-4 pt-4">
-              <Button onClick={handleContinue} className="w-full">
-                Next
-              </Button>
-              <Button variant="outline" onClick={handleBack} className="w-full">
-                Back
+
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                className="w-full py-6 "
+              >
+                <ArrowLeft /> Back
               </Button>
             </div>
           </CardContent>

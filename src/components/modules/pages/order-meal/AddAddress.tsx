@@ -5,16 +5,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
 import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { z } from 'zod';
-
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Calendar } from '@/components/ui/calendar';
-import { Card } from '@/components/ui/card';
-import Loading from '@/components/shared/Loading';
 import { addAddress, getMyAddress } from '@/services/address';
 import { toast } from 'sonner';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import Loading from '@/components/shared/Loading';
 
 const validationSchema = z.object({
   zipCode: z.string().min(1, 'Zip code is required'),
@@ -35,27 +41,25 @@ const AddAddress = ({
   const [emptyDateError, setEmptyDateError] = useState('');
   const [loading, setLoading] = useState(true);
   const [myAddress, setMyAddress] = useState<any>(null);
+  console.log(pickupDate);
 
   const form = useForm<FormDataType>({
     resolver: zodResolver(validationSchema),
     defaultValues: {
       customization: '',
-      zipCode: myAddress?.zipCode || '',
-      pickupStreet: myAddress?.pickupStreet || '',
-      houseNo: myAddress?.houseNo || '',
-      city: myAddress?.city || '',
+      zipCode: '',
+      pickupStreet: '',
+      houseNo: '',
+      city: '',
     },
   });
 
-  // Fetch address and populate form
   useEffect(() => {
     const fetchAddress = async () => {
       try {
         const res = await getMyAddress();
-
         if (res?.data) {
           setMyAddress(res.data);
-
           form.reset({
             customization: '',
             zipCode: res.data.zipCode || '',
@@ -65,7 +69,7 @@ const AddAddress = ({
           });
         }
       } catch (err) {
-        console.error('Failed to fetch address in component:', err);
+        console.error('Failed to fetch address:', err);
       } finally {
         setLoading(false);
       }
@@ -74,29 +78,30 @@ const AddAddress = ({
     fetchAddress();
   }, [form]);
 
-  useEffect(() => {
-    if (pickupDate) {
-      localStorage.setItem(
-        'pickupDate',
-        dayjs(pickupDate).format('YYYY-MM-DD')
-      );
-    }
-  }, [pickupDate]);
-
   const onSubmit = async (formData: FormDataType) => {
+    console.log(pickupDate);
     if (!pickupDate) {
       setEmptyDateError('Please select pickup date');
       return;
     }
 
+    console.log(formData.pickupStreet);
+    console.log(dayjs(pickupDate).format('YYYY-MM-DD'));
+
+    setEmptyDateError('');
     if (formData.customization) {
       localStorage.setItem('customization', formData.customization);
     }
+    localStorage.setItem('pickupDate', dayjs(pickupDate).format('YYYY-MM-DD'));
 
-    const payload = { ...formData };
+    const payload = {
+      ...formData,
+      pickupStreet: dayjs(pickupDate).format('YYYY-MM-DD'),
+    };
     delete payload.customization;
 
     const res = await addAddress(payload);
+    console.log(res);
 
     if (res?.success === false) {
       toast.error(res.message);
@@ -106,13 +111,14 @@ const AddAddress = ({
     if (res?.success) {
       setCurrentStep((prev) => prev + 1);
       form.reset();
+      setPickupDate(undefined);
     }
   };
 
   if (loading) return <Loading label="Fetching your address..." />;
 
   return (
-    <div className="px-4  border-green-500 py-10 md:py-16 flex flex-col justify-center max-w-3xl w-full mx-auto">
+    <div className="px-4 py-10 md:py-16 max-w-3xl w-full mx-auto">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-primary mb-2">
           Pick up Address
@@ -176,6 +182,7 @@ const AddAddress = ({
             />
           </div>
         </div>
+
         <div>
           <Label htmlFor="city" className="text-gray-700">
             City
@@ -188,22 +195,39 @@ const AddAddress = ({
           />
         </div>
 
-        <Label className="text-gray-700">Receive Date</Label>
-        <Card className="w-[100%] mx-auto p-3 mt-1 bg-gray-50 border border-gray-200 shadow-sm ">
-          <Calendar
-            className="w-[100%]  mx-auto"
-            mode="single"
-            selected={pickupDate}
-            onSelect={(date) => {
-              setPickupDate(date);
-              setEmptyDateError('');
-            }}
-            disabled={(date) => date < new Date()}
-          />
-        </Card>
-        {emptyDateError && (
-          <p className="text-red-500 text-sm mt-1">{emptyDateError}</p>
-        )}
+        <div className="">
+          <Label className="text-gray-700 mb-2 block">Pickup Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  'w-[655px] py-6 justify-start text-left font-normal',
+                  !pickupDate && 'text-muted-foreground'
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {pickupDate ? (
+                  format(pickupDate, 'PPP')
+                ) : (
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={pickupDate}
+                onSelect={setPickupDate}
+                disabled={(date) => date < new Date()}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+          {emptyDateError && (
+            <p className="text-sm text-red-500 mt-2">{emptyDateError}</p>
+          )}
+        </div>
 
         <Button
           type="submit"
